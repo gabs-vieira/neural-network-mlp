@@ -11,6 +11,7 @@ from results_exporter import ResultsExporter
 from thresh_hold_analyzer import ThresholdAnalyzer
 
 
+
 def main():
     print("="*70)
     print("REDE NEURAL MLP - PREVISÃO DE DESEMPENHO NBA")
@@ -30,7 +31,14 @@ def main():
     X_train, X_test, y_train, y_test = mlp.train_mlp_with_split(X_np, y_np, test_size=0.2, epochs=1000)
     exporter.save_training_history(mlp.loss_history)
 
-    # 3 - Avaliação
+
+
+
+
+    # 4/5 - Avaliação/ geracao dos dados
+    #========================
+    #INICIO AVALIACAO
+    #========================
     print("Gerando análise ROC...")
     activations_test, _ = mlp.forward(X_test)
     y_pred_proba_test = activations_test[-1]
@@ -77,17 +85,8 @@ def main():
     # Importancia das features
     print("Calculando importância das features...")
 
-    # Usar a versão simplificada e robusta
-    try:
-        importance = evaluator_corrected.feature_importance_simple(mlp, X_test, y_test, n_iterations=3)
-    except Exception as e:
-        print(f" Erro no cálculo de importância: {e}")
-        print("Usando método alternativo...")
-        # Método de fallback
-        importance = np.random.random(X_test.shape[1]) * 0.1  # Valores pequenos como fallback
-
+    importance = evaluator_corrected.feature_importance_simple(mlp, X_test, y_test, n_iterations=3)
     df_importance = exporter.save_feature_importance(importance, feature_names)
-
 
     exporter.save_all_data(X_train, X_test, y_train, y_test, feature_names) #Salvar os dados
 
@@ -103,8 +102,15 @@ def main():
     })
     roc_data.to_csv(f"{exporter.results_path}/tables/roc_curve_data.csv", index=False)
 
+
+
+
+    #========================
+    #FINAL AVALIACAO
+    #========================
+
     print("\n" + "="*70)
-    print("✅ ANÁLISE CONCLUÍDA!")
+    print("ANÁLISE CONCLUÍDA!")
     print("="*70)
 
 if __name__ == '__main__':
