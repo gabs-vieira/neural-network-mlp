@@ -10,6 +10,7 @@ class MLP:
         self.weights = []
         self.biases = []
         self.weight_updates_prev = []
+        self.loss_history = []
 
         for i in range(self.num_layers - 1):
             # Inicialização Xavier/Glorot melhorada
@@ -81,10 +82,12 @@ class MLP:
     def train(self, X, y, epochs=1000):
         for epoch in range(epochs):
             activations, z_values = self.forward(X)
-            self.backward(X, y, activations, z_values)
+            self.backward(X, y.reshape(-1, 1), activations, z_values)
+
+            loss = self.compute_loss(y.reshape(-1, 1), activations[-1])
+            self.loss_history.append(loss)  # SALVAR HISTÓRICO
 
             if (epoch+1) % 100 == 0 or epoch == 0:
-                loss = self.compute_loss(y, activations[-1])
                 print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}")
 
     def train_mlp_with_split(self, X, y, test_size=0.2, epochs=500, random_seed=42):

@@ -1,0 +1,47 @@
+
+            RELATÓRIO DE ANÁLISE - MODELO NBA PERFORMANCE
+            ============================================
+            Data: 2025-10-21 23:43:27
+
+            RESUMO DO MODELO:
+            ----------------
+            Acurácia: 0.9369 (93.69%)
+            Precisão: 0.7500
+            Recall: 0.5455
+            F1-Score: 0.6316
+            AUC-ROC: 0.8914
+
+            MATRIZ DE CONFUSÃO:
+            ------------------
+            TN: 98 | FP: 2
+            FN: 5 | TP: 6
+
+            VARIÁVEIS MAIS IMPORTANTES:
+            --------------------------
+               Feature  Importance
+3       MP    0.010811
+26     PTS    0.010811
+8       3P    0.007207
+15      FT    0.005405
+2       GS    0.003604
+19     DRB    0.003604
+24     TOV    0.001802
+6      FG%    0.000000
+0      Age    0.000000
+14    eFG%    0.000000
+
+            
+            
+
+            INTERPRETAÇÃO:
+            -------------
+            - O modelo apresenta boa acurácia geral (93.7%)
+            - Poder discriminativo: BOM
+            - As variáveis listadas acima têm maior impacto nas previsões
+
+            SUGESTÕES:
+            ---------
+            1. Coletar mais dados para melhorar generalização
+            2. Focar nas variáveis mais importantes para análise
+            3. Considerar balanceamento de classes se necessário
+            
