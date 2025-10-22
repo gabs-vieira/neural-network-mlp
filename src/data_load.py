@@ -8,18 +8,21 @@ def prepare_data():
 
     #Remover colunas irrelevantes
     columns_to_remove = ["Player", "Tm", "Pos"]
-    for col in columns_to_remove:
-        if col in df.columns:
-            df = df.drop(columns=col)
+    df = df.drop(columns=[col for col in columns_to_remove if col in df.columns])
+
+    #remover todas as linhas que possuirem um valor nulo, visto que todos os dados sao importantes para o modelo
+    df = df.dropna()
+
+    #Converter coluna Performance em valor binario
+    df["Performance"] = df["Performance"].astype(str).str.strip().str.capitalize()
+    df["Performance"] = df["Performance"].map({"Good": 1, "Bad": 0})
+
 
     #Substituir virula por ponto em colunas numericas que vieram como strings
     for col in df.columns:
-        if df[col].dtype == object:
+        if col != "Performance" and df[col].dtype == object:
             df[col] = df[col].astype(str).str.replace(",", ".")
-            df[col] = pd.to_numeric(df[col], errors="ignore")
-
-    #Converter coluna Performance em valor binario
-    df["Performance"] = df["Performance"].map({"Good": 1, "Bad": 0})
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     #Separar as nossas variaveis independentes e a dependente -> que vai ser a Performance ja que estamos medindo a performance dos jogadores da NBA
     X = df.drop(columns=["Performance"])

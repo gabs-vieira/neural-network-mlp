@@ -2,49 +2,43 @@ import numpy as np
 
 class MLP:
     def __init__(self, layer_sizes, learning_rate=0.01, momentum=0.9):
-        """
-        Args
-            :layer_sizes: lista com o número de neurônios por camada, incluindo input e output. Ex: [n_features, 10, 5, 1] -> 2 camadas ocultas + saída
-            :learning_rate: taxa de aprendizado (alpha)
-            :momentum: fator de momentum
-        """
-
         self.layer_sizes = layer_sizes
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.num_layers = len(layer_sizes)
 
-
-        # Inicializar pesos e biases (pequenos valores aleatórios)
         self.weights = []
         self.biases = []
-        self.weight_updates_prev = []  # Para momentum
+        self.weight_updates_prev = []
+
         for i in range(self.num_layers - 1):
-            w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * 0.1
+            # Inicialização Xavier/Glorot melhorada
+            scale = np.sqrt(2.0 / (layer_sizes[i] + layer_sizes[i+1]))
+            w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * scale
             b = np.zeros((1, layer_sizes[i+1]))
             self.weights.append(w)
             self.biases.append(b)
             self.weight_updates_prev.append(np.zeros_like(w))
-
 
     # ===============================
     # Função de ativação sigmoide
     # ===============================
     @staticmethod
     def sigmoid(x):
-        return 1 / (1+np.exp(-x))
+        # Estabilidade numérica
+        x = np.clip(x, -500, 500)
+        return 1 / (1 + np.exp(-x))
 
     @staticmethod
     def sigmoid_derivative(x):
         return x * (1 - x)
 
-
     # ===============================
     # Forward propagation
     # ===============================
     def forward(self, X):
-        activations = [X] #lista com ativacao de cada camada
-        z_values = [] #valores antes da ativacao
+        activations = [X]
+        z_values = []
 
         for i in range(self.num_layers - 1):
             z = np.dot(activations[-1], self.weights[i]) + self.biases[i]
@@ -54,22 +48,20 @@ class MLP:
 
         return activations, z_values
 
-
     # ===============================
-    # Backpropagation
+    # Backpropagation CORRIGIDA
     # ===============================
     def backward(self, X, y, activations, z_values):
-        deltas = [None] * (self.num_layers - 1)  # delta por camada
+        deltas = [None] * (self.num_layers - 1)
 
-        # Camada de saída (Binary Cross-Entropy derivada + sigmoide)
+        # Camada de saída - CORREÇÃO IMPORTANTE
         output = activations[-1]
-        # FatorErro = y - y_hat
-        factor_error = y - output
-        deltas[-1] = factor_error * self.sigmoid_derivative(output)
+        error = output - y  # MSE derivative: dL/dz = (y_hat - y) * sigmoid_derivative
+        deltas[-1] = error * self.sigmoid_derivative(output)
 
-        # Camadas ocultas
-        for l in reversed(range(self.num_layers - 2)):
-            deltas[l] = self.sigmoid_derivative(activations[l+1]) * np.dot(deltas[l+1], self.weights[l+1].T)
+        # Propagação do erro para trás - CORREÇÃO NO LOOP
+        for l in range(self.num_layers - 3, -1, -1):  # Corrigido o range
+            deltas[l] = np.dot(deltas[l+1], self.weights[l+1].T) * self.sigmoid_derivative(activations[l+1])
 
         # Atualização de pesos e biases
         for i in range(self.num_layers - 1):
@@ -78,11 +70,10 @@ class MLP:
 
             # Momentum
             update = self.learning_rate * grad_w + self.momentum * self.weight_updates_prev[i]
-            self.weights[i] += update
-            self.biases[i] += self.learning_rate * grad_b
+            self.weights[i] -= update  # SUBTRAIR o gradiente
+            self.biases[i] -= self.learning_rate * grad_b  # SUBTRAIR o gradiente
 
             self.weight_updates_prev[i] = update
-
 
     # ===============================
     # Treinamento
@@ -96,11 +87,8 @@ class MLP:
                 loss = self.compute_loss(y, activations[-1])
                 print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}")
 
-
     def train_mlp_with_split(self, X, y, test_size=0.2, epochs=500, random_seed=42):
-        # ===============================
-        # 1. Split treino/teste
-        # ===============================
+        # Split treino/teste
         np.random.seed(random_seed)
         indices = np.arange(X.shape[0])
         np.random.shuffle(indices)
@@ -110,14 +98,12 @@ class MLP:
         X_train, X_test = X[train_idx], X[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
 
-        # ===============================
-        # 2. Treinamento
-        # ===============================
+        print(f"Treino: X{X_train.shape}, y{y_train.shape}")
+        print(f"Teste: X{X_test.shape}, y{y_test.shape}")
+
+        # Treinamento
         self.train(X_train, y_train, epochs=epochs)
 
-        # ===============================
-        # 3. Retornar dados de teste para avaliação
-        # ===============================
         return X_train, X_test, y_train, y_test
 
     # ===============================
@@ -137,13 +123,10 @@ class MLP:
         activations, _ = self.forward(X)
         return (activations[-1] > 0.5).astype(int)
 
-
-
-
-
-
-
     # ===============================
-    # Avaliacao
+    # Avaliação
     # ===============================
-
+    def evaluate(self, X, y):
+        predictions = self.predict(X)
+        accuracy = np.mean(predictions == y)
+        return accuracy
