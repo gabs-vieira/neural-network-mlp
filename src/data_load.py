@@ -33,7 +33,7 @@ def prepare_data():
     y_np = y.to_numpy(dtype=float).reshape(-1,1) # transformar  y em numpy array
     X_np = X_normalized
 
-    return X_np, y_np
+    return X_np, y_np, df
 
 
 
