@@ -1,5 +1,6 @@
 from mlp import MLP
 import numpy as np
+from model_evaluation import ModelEvaluator
 
 class HyperparameterTuner:
     def __init__(self, X, y):
@@ -42,15 +43,36 @@ class HyperparameterTuner:
                 self.X, self.y, test_size=test_size, epochs=epochs
             )
 
-            # Avalia modelo
-            evaluator = ModelEvaluator(y_test, mlp.forward(X_test)[0][-1])
-            metrics = evaluator.comprehensive_report(mlp, X_test)
+            # Avalia modelo - CORREÇÃO AQUI
+            activations, _ = mlp.forward(X_test)
+            y_pred_proba = activations[-1]
+            
+            # Calcular métricas básicas
+            y_pred = (y_pred_proba > 0.5).astype(int).flatten()
+            y_test_flat = y_test.flatten()
+            
+            # Matriz de confusão
+            TP = np.sum((y_pred == 1) & (y_test_flat == 1))
+            FP = np.sum((y_pred == 1) & (y_test_flat == 0))
+            TN = np.sum((y_pred == 0) & (y_test_flat == 0))
+            FN = np.sum((y_pred == 0) & (y_test_flat == 1))
+            
+            # Métricas
+            accuracy = (TP + TN) / (TP + FP + TN + FN) if (TP + FP + TN + FN) > 0 else 0
+            precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+            recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+            f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+            
+            # AUC-ROC usando ModelEvaluator
+            evaluator = ModelEvaluator(y_test, y_pred_proba)
+            fpr, tpr, _ = evaluator.roc_curve_corrected()
+            auc_roc = evaluator.auc_roc_corrected(fpr, tpr)
 
             results.append({
                 'params': param_dict,
-                'test_accuracy': metrics['accuracy'],
-                'test_f1': metrics['f1_score'],
-                'auc_roc': metrics['auc_roc'],
+                'test_accuracy': accuracy,
+                'test_f1': f1_score,
+                'auc_roc': auc_roc,
                 'model': mlp
             })
 

@@ -1,0 +1,51 @@
+
+                RELATÓRIO DE ANÁLISE - MODELO NBA PERFORMANCE
+                ============================================
+                Data: 2025-10-23 15:54:03
+                Pasta: ./results/run_20251023_155400
+
+                RESUMO DO MODELO:
+                ----------------
+                Acurácia: 0.9820 (98.20%)
+                Precisão: 0.8462
+                Recall: 1.0000
+                F1-Score: 0.9167
+                AUC-ROC: 0.9945
+
+                MATRIZ DE CONFUSÃO:
+                ------------------
+                TN: 98 | FP: 2
+                FN: 0 | TP: 11
+
+                TOP 5 VARIÁVEIS MAIS IMPORTANTES:
+                -------------------------------
+                FT: 0.0601
+PTS: 0.0300
+FG: 0.0270
+MP: 0.0210
+3P: 0.0210
+
+            MELHORES HIPERPARÂMETROS:
+            -----------------------
+            learning_rate: 0.001
+hidden_neurons: 10
+momentum: 0.8
+
+            INTERPRETAÇÃO:
+            -------------
+            - Acurácia geral: 98.2%
+            - Poder discriminativo: EXCELENTE
+            - Balanceamento: BOM
+
+            ARQUIVOS GERADOS:
+            ---------------
+            /tables/ - Métricas, importância, hiperparâmetros
+            /plots/  - Gráficos e visualizações
+            /models/ - Modelos treinados (se salvos)
+
+            SUGESTÕES:
+            ---------
+            1. Focar nas variáveis mais importantes para análise
+            2. Considerar balanceamento de classes se necessário
+            3. Validar com dados de temporadas diferentes
+            

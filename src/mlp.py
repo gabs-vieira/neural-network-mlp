@@ -13,7 +13,7 @@ class MLP:
         self.loss_history = []
 
         for i in range(self.num_layers - 1):
-            # Inicialização Xavier/Glorot melhorada
+            # Xavier/Glorot melhorada
             scale = np.sqrt(2.0 / (layer_sizes[i] + layer_sizes[i+1]))
             w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * scale
             b = np.zeros((1, layer_sizes[i+1]))
@@ -60,8 +60,8 @@ class MLP:
         error = output - y  # MSE derivative: dL/dz = (y_hat - y) * sigmoid_derivative
         deltas[-1] = error * self.sigmoid_derivative(output)
 
-        # Propagação do erro para trás - CORREÇÃO NO LOOP
-        for l in range(self.num_layers - 3, -1, -1):  # Corrigido o range
+        # Propagação do erro para trás 
+        for l in range(self.num_layers - 3, -1, -1):
             deltas[l] = np.dot(deltas[l+1], self.weights[l+1].T) * self.sigmoid_derivative(activations[l+1])
 
         # Atualização de pesos e biases
