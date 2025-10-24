@@ -131,7 +131,7 @@ class ResultsExporter:
         plot_path = f"{self.results_path}/plots/{filename}.png"
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"📈 Plot de importância salvo: {plot_path}")
+        print(f"Plot de importância salvo: {plot_path}")
 
         return df_importance
 
@@ -148,7 +148,7 @@ class ResultsExporter:
         filepath = f"{self.results_path}/plots/{filename}"
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"📈 Histórico de treinamento salvo: {filepath}")
+        print(f"Histórico de treinamento salvo: {filepath}")
 
     def save_threshold_analysis(self, metrics_df, best_threshold, best_f1, filename="threshold_analysis.png"):
         """Salva análise de thresholds SEM MOSTRAR"""
@@ -224,7 +224,7 @@ class ResultsExporter:
         filepath = f"{self.results_path}/plots/{filename}"
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"📈 Comparação de modelos salva: {filepath}")
+        print(f"Comparação de modelos salva: {filepath}")
 
     def generate_summary_report(self, metrics, feature_importance, best_hyperparams=None):
         """Gera relatório sumário em texto"""
@@ -285,7 +285,7 @@ class ResultsExporter:
         with open(report_path, "w", encoding='utf-8') as f:
             f.write(report)
 
-        print(f"📋 Relatório sumário salvo: {report_path}")
+        print(f"Relatório sumário salvo: {report_path}")
         return report
 
     def save_all_data(self, X_train, X_test, y_train, y_test, feature_names):

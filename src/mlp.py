@@ -13,7 +13,7 @@ class MLP:
         self.loss_history = []
 
         for i in range(self.num_layers - 1):
-            # Xavier/Glorot melhorada
+            # Xavier/Glorot
             scale = np.sqrt(2.0 / (layer_sizes[i] + layer_sizes[i+1]))
             w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * scale
             b = np.zeros((1, layer_sizes[i+1]))
@@ -50,17 +50,17 @@ class MLP:
         return activations, z_values
 
     # ===============================
-    # Backpropagation CORRIGIDA
+    # Backpropagation
     # ===============================
     def backward(self, X, y, activations, z_values):
         deltas = [None] * (self.num_layers - 1)
 
-        # Camada de saída - CORREÇÃO IMPORTANTE
+        # Camada de saída
         output = activations[-1]
         error = output - y  # MSE derivative: dL/dz = (y_hat - y) * sigmoid_derivative
         deltas[-1] = error * self.sigmoid_derivative(output)
 
-        # Propagação do erro para trás 
+        # Propagação do erro para trás
         for l in range(self.num_layers - 3, -1, -1):
             deltas[l] = np.dot(deltas[l+1], self.weights[l+1].T) * self.sigmoid_derivative(activations[l+1])
 
